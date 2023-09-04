@@ -1,2 +1,2 @@
-# Slack_Attack_Framework
+# Slack Attack Framework
 A Slack bot phishing framework for Red Teaming exercises
