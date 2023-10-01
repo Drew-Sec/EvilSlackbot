@@ -32,7 +32,7 @@ def token_attacks():
     if 'chat:write' in perms:
         print(parse._option_string_actions['-m'].option_strings,parse._option_string_actions['-m'].help)
     if 'files:write' in perms:
-        print(parse._option_string_actions['-f'].option_strings,parse._option_string_actions['-f'].help)    
+        print(parse._option_string_actions['-a'].option_strings,parse._option_string_actions['-a'].help)    
     
 def checkperms():
     global perms
