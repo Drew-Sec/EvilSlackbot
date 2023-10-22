@@ -105,13 +105,15 @@ def setupSpoofMessage():
         )
     div()
     ready = input(red+'Ready to send your message? y/n\n'+white)
-    if ready != 'y':
-        exit()
+    if ready != 'y' and ready != 'yes' and ready != 'Y':
+        print(red+'Message not sent')
+        setupSpoofMessage()
     elif args.email_list != None:
         sendMessageToList()
     else:
         lookupByEmail()
         sendMessage()
+        print(green+'Message sent to '+white+args.email)
 
 # Send non-spoofed message
 def setupMessage():
@@ -124,13 +126,15 @@ def setupMessage():
         )
     div()
     ready = input(red+'Ready to send your message? y/n\n'+white)
-    if ready != 'y':
-        exit()
+    if ready != 'y' and ready != 'yes' and ready != 'Y':
+        print(red+'Message not sent')
+        setupMessage()
     elif args.email_list != None:
         sendMessageToList()
     else:
         lookupByEmail()
         sendMessage()
+        print(green+'Message sent to '+white+args.email)
 
 # Sending to single target
 def sendMessage():
@@ -140,14 +144,13 @@ def sendMessage():
         icon_url=icon,
         text=message
         )
-
 # Sending to list of targets
 def sendMessageToList():
     r = open(args.email_list)
     for address in r.readlines():
         lookupByEmailList(address)
         sendMessage()
-        print(green+"Sending Message to: " + white+address)
+        print(green+"Message sent to: " + white+address)
     r.close()
 
 # Lookup slack userid for each email in list
@@ -171,20 +174,22 @@ def setupFileMessage():
         )
     div()
     ready = input(red + 'Ready to send your message? y/n\n'+white)
-    if ready != 'y':
-        exit()
+    if ready != 'y' and ready != 'yes' and ready != 'Y':
+        print(red+'Message not sent')
+        setupFileMessage()
     elif args.email_list != None:
         sendFileToList()
     else:
         lookupByEmail()
         sendFile()
+        print(green+'File sent to '+white+args.email)
 
 def sendFileToList():
     r = open(args.email_list)
     for address in r.readlines():
         lookupByEmailList(address)
         sendFile()
-        print(green+"Sending File to: " + white+address)
+        print(green+"File sent to: " + white+address)
     r.close()
 
 def sendFile():
