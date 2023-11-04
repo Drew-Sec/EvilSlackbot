@@ -37,15 +37,17 @@ group_args = parse.add_argument_group("Arguments")
 
 # Display help page
 group_req.add_argument('-t','--token',help='Slack Oauth token',action='store',required=True)
-group_attack.add_argument('-sP','--spoof',help='Spoof a Slack message, customizing your name, icon, etc (Requires -e or -eL)',action='store_true')
-group_attack.add_argument('-m','--message',help='Send a message as the bot associated with your token (Requires -e or -eL)',action='store_true')
+group_attack.add_argument('-sP','--spoof',help='Spoof a Slack message, customizing your name, icon, etc (Requires -e,-eL, or -cH)',action='store_true')
+group_attack.add_argument('-m','--message',help='Send a message as the bot associated with your token (Requires -e,-eL, or -cH)',action='store_true')
 group_attack.add_argument('-s','--search',help='Search slack for secrets with a keyword',action='store_true')
-group_attack.add_argument('-a','--attach',help='Send a message containing a malicious attachment (Requires -f and -e or -eL)',action='store_true')
+group_attack.add_argument('-a','--attach',help='Send a message containing a malicious attachment (Requires -f and -e,-eL, or -cH)',action='store_true')
 group_args.add_argument('-f','--file',help='Path to file attachment',action='store')
 group_args.add_argument('-e','--email',help='Email of target',action='store')
 group_args.add_argument('-cH','--channel',help='Target Slack Channel (Do not include #',action='store')
 group_args.add_argument('-eL','--email_list',help='Path to list of emails separated by newline',action='store')
 group_args.add_argument('-c','--check',help='Lookup and display the permissions and available attacks associated with your provided token.',action='store_true')
+group_args.add_argument('-o','--outfile',help='Outfile to store search results',action='store')
+group_args.add_argument('-cL','--channel_list',help='List all public Slack channels',action='store_true')
 
 args = parse.parse_args()
 
@@ -64,7 +66,13 @@ def token_attacks():
         print(blue + str(parse._option_string_actions['-m'].option_strings),parse._option_string_actions['-m'].help)
     if 'files:write' in perms:
         print(blue + str(parse._option_string_actions['-a'].option_strings),parse._option_string_actions['-a'].help)    
-    
+    if 'users:read.email' not in perms and args.email != None:
+        print(red+'ERROR: Your provided token does not have the users:read.email permission. You can not use -eL or -e to lookup via email')
+        exit()
+    if 'users:read.email' not in perms and args.email_list != None:
+        print(red+'ERROR: Your provided token does not have the users:read.email permission. You can not use -eL or -e to lookup via email')
+        exit()
+        
 def checkperms():
     global perms
     check = t.api_call('auth.test')
@@ -87,7 +95,18 @@ e_and_eL = args.email != None and args.email_list != None
 e_and_cH = args.email != None and args.channel != None
 eL_and_cH = args.email_list != None and args.channel != None
 if e_and_eL or e_and_cH or eL_and_cH: 
-    print(red+'Error: -e,-eL,and -cH can not be used together')
+    print(red+'Error: -e,-eL, and -cH can not be used together')
+    exit()
+
+# Check that there's only one sending attack argument at a time
+m_and_sP = args.message != None and args.spoof != None
+m_and_a = args.message != None and args.attach != None
+m_and_s = args.message != None and args.search != None
+a_and_sP = args.attach != None and args.spoof != None
+a_and_s = args.attach != None and args.search != None
+s_and_sP = args.search != None and args.spoof != None
+if m_and_sP or m_and_a or m_and_s or a_and_sP or a_and_s or s_and_sP: 
+    print(red+'Error: -m,-sP, -a and -s can not be used together')
     exit()
 
 channels = {}
@@ -107,8 +126,22 @@ def lookupByChannel():
         print(red+'ERROR: '+white+args.channel+red+' channel not found')
         exit()
     user_id = channel_id
+
+def listChannels():
+    lookup = t.conversations_list()
+    channel_list = lookup['channels']
+    div()
+    print(blue+'Searching for channels:')
+    if args.outfile != None:
+            print(green+'Results printed to: '+white+args.outfile)
+    for chan in range(0,len(channel_list)):
+        name = channel_list[chan]['name']
+        if args.outfile != None:
+            with open(args.outfile, 'a') as o:
+                o.write(name+'\n')
+        else:
+            print(name)
         
-#print(channel_id)
 user_id = ""
 # lookup userid by email address
 def lookupByEmail():
@@ -278,16 +311,34 @@ def keywordSearch():
 )
     searchData = search.data['messages']['matches']
     count = len(searchData)
+    print(green+'Searching for keyword: '+white+keyword)
+    if count == 0:
+        print(red+'ERROR: Zero results returned')
     for data in range(count):
-        print(searchData[data]['text'])
-    
+        if args.outfile != None:
+            with open(args.outfile, 'a') as o:
+                o.write(searchData[data]['text'] + '\n')
+        else:
+            print(searchData[data]['text'])
+    if args.outfile != None and count != 0:
+        print(blue+'Search results printed to: '+white+args.outfile)
 
 # Look for arguements
+if args.channel_list == True:
+    if 'channels:read' not in perms:
+        div()
+        print(red + 'ERROR: Your provided token does not have the channels:read permission.',
+              red + 'You can not list channels'
+              )
+        exit()
+    else:
+        listChannels()
+        exit()
 if args.spoof == True:
     if 'chat:write.customize' not in perms:
         div()
         print(red + 'ERROR: Your provided token does not have the chat:write.customize permission.',
-              'You can not send a spoofed message'
+              red + 'You can not send a spoofed message'
               )
         exit()
     if 'channels:read' not in perms and args.channel != None:
@@ -298,7 +349,7 @@ if args.spoof == True:
     if 'chat:write.public' not in perms and args.channel != None:
         div()
         print(red + 'WARNING: Your provided token does not have the chat:write.public permission.',
-              red+'You can not send messages to a channel if your bot is not already member of that channel'
+              red+'You can not send messages to a channel if your bot is not already a member of that channel'
               )
     if args.email == None and args.email_list == None and args.channel == None:
         div()
@@ -322,7 +373,7 @@ if args.message == True:
     if 'chat:write.public' not in perms and args.channel != None:
         div()
         print(red + 'WARNING: Your provided token does not have the chat:write.public permission.',
-              red+'You can not send messages to a channel if your bot is not already member of that channel'
+              red+'You can not send messages to a channel if your bot is not already a member of that channel'
               )
     if args.email == None and args.email_list == None and args.channel == None:
         div()
@@ -346,7 +397,7 @@ if args.attach == True:
     if 'chat:write.public' not in perms and args.channel != None:
         div()
         print(red + 'WARNING: Your provided token does not have the chat:write.public permission.',
-              red+'You can not send messages to a channel if your bot is not already member of that channel'
+              red+'You can not send messages to a channel if your bot is not already a member of that channel'
               )
     if args.email == None and args.email_list == None and args.channel == None:
         div()
