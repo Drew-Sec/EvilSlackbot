@@ -99,13 +99,13 @@ if e_and_eL or e_and_cH or eL_and_cH:
     exit()
 
 # Check that there's only one sending attack argument at a time
-m_and_sP = args.message != None and args.spoof != None
-m_and_a = args.message != None and args.attach != None
-m_and_s = args.message != None and args.search != None
-a_and_sP = args.attach != None and args.spoof != None
-a_and_s = args.attach != None and args.search != None
-s_and_sP = args.search != None and args.spoof != None
-if m_and_sP or m_and_a or m_and_s or a_and_sP or a_and_s or s_and_sP: 
+m_and_sP = args.message != False and args.spoof != False
+m_and_a = args.message != False and args.attach != False
+m_and_s = args.message != False and args.search != False
+a_and_sP = args.attach != False and args.spoof != False
+a_and_s = args.attach != False and args.search != False
+s_and_sP = args.search != False and args.spoof != False
+if m_and_sP or m_and_a or m_and_s or a_and_sP or a_and_s or s_and_sP:
     print(red+'Error: -m,-sP, -a and -s can not be used together')
     exit()
 
