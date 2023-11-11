@@ -31,9 +31,8 @@ def title():
 ''')
 
 # List of tokens permissions
-perms = []
 
-def token_attacks():
+def token_attacks(perms):
     if 'search:read' in perms:
         print(blue + str(parse._option_string_actions['-s'].option_strings),parse._option_string_actions['-s'].help)
     if 'chat:write.customize' in perms:
@@ -50,14 +49,14 @@ def token_attacks():
         exit()
         
 def checkperms():
-    global perms
     check = t.api_call('auth.test')
     perms = check.headers['x-oauth-scopes'].split(',')
     div()
     print(green + 'The permissions for your token are:',red + str(perms))
     div()
     print(green + 'This token allows the following attacks:')
-    token_attacks()
+    token_attacks(perms)
+    return perms
 
 def checks():
     # Check tokens permissions
@@ -65,8 +64,8 @@ def checks():
        checkperms()
        exit()
     else:
-        checkperms()
-
+        perms = checkperms()
+        
     # Check that there's only one sending argument at a time
     e_and_eL = args.email != None and args.email_list != None
     e_and_cH = args.email != None and args.channel != None
@@ -85,14 +84,14 @@ def checks():
     if m_and_sP or m_and_a or m_and_s or a_and_sP or a_and_s or s_and_sP:
         print(red+'Error: -m,-sP, -a and -s can not be used together')
         exit()
+    return perms
 
-channels = {}
-channel_id = ''
 # Lookup channel_id
 def lookupByChannel():
     lookup = t.conversations_list()
     channel_list = lookup['channels']
-    global channel_id,channels,user_id
+    global user_id
+    channels = {}
     for chan in range(0,len(channel_list)):
         name = channel_list[chan]['name']
         chan_id = channel_list[chan]['id']
@@ -301,7 +300,7 @@ def keywordSearch():
         print(blue+'Search results printed to: '+white+args.outfile)
 
 # Looks for arguements and runs the associated functions if valid
-def start():
+def start(perms):
     if args.channel_list == True:
         if 'channels:read' not in perms:
             div()
@@ -416,8 +415,8 @@ def setupArgparse():
     
 def main():
     title()
-    checks()
-    start()
+    perms = checks()
+    start(perms)
 
 if __name__ == '__main__':
     parse = argparse.ArgumentParser()
