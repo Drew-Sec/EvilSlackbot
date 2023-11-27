@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/Drew-Sec/EvilSlackbot/blob/main/images/logo.png)
+![EvilSlackbot](https://raw.githubusercontent.com/Drew-Sec/EvilSlackbot/drewsec/images/logo.png)
 # EvilSlackbot
 A Slack Attack Framework for conducting Red Team and phishing exercises within Slack workspaces. 
 
@@ -27,7 +27,7 @@ Required:
 ```
 ## Attacks
 Depending on the permissions associated with your token, there are several attacks that **EvilSlackbot** can conduct. **EvilSlackbot** will automatically check what permissions your token has and will display them and any attack that you are able to perform with your given token.  
-![Token Permission Check](https://github.com/Drew-Sec/EvilSlackbot/blob/main/images/check.png)
+![Token Permission Check](https://raw.githubusercontent.com/Drew-Sec/EvilSlackbot/drewsec/images/check.png)
 
 ```
 Attacks:
