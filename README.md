@@ -12,9 +12,9 @@ Millions of organizations utilize Slack to help their employees communicate, col
 In addition to red teaming, **EvilSlackbot** has also been developed with Slack phishing simulations in mind. To use **EvilSlackbot** to conduct a Slack phishing exercise, simply create a bot within Slack, give your bot  the permissions required for your intended test, and provide **EvilSlackbot** with a list of emails of employees you would like to test with simulated phishes (Links, files, spoofed messages) 
 
 ## Installation 
-**EvilSlackbot** requires python3 and Slack SDK  
+**EvilSlackbot** requires python3 and Slackclient 
 ```
-pip3 install slack
+pip3 install slackclient
 ```
 ## Usage
 ```
