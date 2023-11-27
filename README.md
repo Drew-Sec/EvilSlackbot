@@ -25,6 +25,9 @@ python3 EvilSlackbot.py [-h] -t TOKEN [-sP] [-m] [-s] [-a] [-f FILE] [-e EMAIL] 
 Required:
   -t TOKEN, --token TOKEN  (Slack xoxb/xoxp token)
 ```
+```
+python3 EvilSlackbot.py -t <token>
+```
 ## Attacks
 Depending on the permissions associated with your token, there are several attacks that **EvilSlackbot** can conduct. **EvilSlackbot** will automatically check what permissions your token has and will display them and any attack that you are able to perform with your given token.  
 ![Token Permission Check](https://raw.githubusercontent.com/Drew-Sec/EvilSlackbot/drewsec/images/check.png)
@@ -43,37 +46,37 @@ Attacks:
 With the correct token permissions, **EvilSlackbot** allows you to send phishing messages while impersonating the botname and bot photo. This attack also requires either the **email address (-e)** of the target, a **list of target emails (-eL)**, or the name of a **Slack channel (-cH)**. **EvilSlackbot** will use these arguments to lookup the SlackID of the user associated with the provided emails or channel name. To automate your attack, use a list of emails.
 
 ```
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -sP -e <email address>
+python3 EvilSlackbot.py -t <xoxb token> -sP -e <email address>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -sP -eL <email list>
+python3 EvilSlackbot.py -t <xoxb token> -sP -eL <email list>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -sP -cH <Channel name>
+python3 EvilSlackbot.py -t <xoxb token> -sP -cH <Channel name>
 ```
 
 ### __Phishing Messages (-m)__
 With the correct token permissions, **EvilSlackbot** allows you to send phishing messages containing phishing links. What makes this attack different from the Spoofed attack is that this method will send the message as the bot associated with your provided token. You will not be able to choose the name or image of the bot sending your phish. This attack also requires either the **email address (-e)** of the target, a **list of target emails (-eL)**, or the name of a **Slack channel (-cH)**. **EvilSlackbot** will use these arguments to lookup the SlackID of the user associated with the provided emails or channel name. To automate your attack, use a list of emails.
 ```
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -m -e <email address>
+python3 EvilSlackbot.py -t <xoxb token> -m -e <email address>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -m -eL <email list>
+python3 EvilSlackbot.py -t <xoxb token> -m -eL <email list>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -m -cH <Channel name>
+python3 EvilSlackbot.py -t <xoxb token> -m -cH <Channel name>
 ```
 
 ### __Secret Search (-s)__
 With the correct token permissions, **EvilSlackbot** allows you to search Slack for secrets via a keyword search. Right now, this attack requires a xoxp token, as xoxb tokens can not be given the proper permissions to keyword search within Slack. Use the -o argument to write the search results to an outfile. 
 ```
-python3 EvilSlackbot.py -t xoxp-123456-2893849 -s -o <outfile.txt>
+python3 EvilSlackbot.py -t <xoxp token> -s -o <outfile.txt>
 ```
 
 ### __Attachments (-a)__
 With the correct token permissions, **EvilSlackbot** allows you to send file attachments. The attachment attack requires a **path to the file (-f)** you with to send. This attack also requires either the **email address (-e)** of the target, a **list of target emails (-eL)**, or the name of a **Slack channel (-cH)**. **EvilSlackbot** will use these arguments to lookup the SlackID of the user associated with the provided emails or channel name. To automate your attack, use a list of emails.
 ```
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -a -f <path to file> -e <email address>
+python3 EvilSlackbot.py -t <xoxb token> -a -f <path to file> -e <email address>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -a -f <path to file> -eL <email list>
+python3 EvilSlackbot.py -t <xoxb token> -a -f <path to file> -eL <email list>
 
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -a -f <path to file> -cH <Channel name>
+python3 EvilSlackbot.py -t <xoxb token> -a -f <path to file> -cH <Channel name>
 ``` 
 
 ## Arguments
@@ -91,5 +94,5 @@ Arguments:
 With the correct permissions, **EvilSlackbot** can search for and list all of the public channels within the Slack workspace. This can help with planning where to send channel messages. Use -o to write the list to an outfile. 
 
 ```
-python3 EvilSlackbot.py -t xoxb-123456-2893849 -cL
+python3 EvilSlackbot.py -t <xoxb token> -cL
 ```
