@@ -1,4 +1,4 @@
-![](https://github.com/Drew-Sec/EvilSlackbot/blob/main/images/logo.png)
+![](https://raw.githubusercontent.com/Drew-Sec/EvilSlackbot/blob/main/images/logo.png)
 # EvilSlackbot
 A Slack Attack Framework for conducting Red Team and phishing exercises within Slack workspaces. 
 
