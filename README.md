@@ -18,9 +18,41 @@ pip3 install slackclient
 ```
 ## Usage
 ```
-python3 EvilSlackbot.py [-h] -t TOKEN [-sP] [-m] [-s] [-a] [-f FILE] [-e EMAIL] [-cH CHANNEL][-eL EMAIL_LIST] [-c] [-o OUTFILE] [-cL]
+usage: EvilSlackbot.py [-h] -t TOKEN [-sP] [-m] [-s] [-a] [-f FILE] [-e EMAIL]
+                       [-cH CHANNEL] [-eL EMAIL_LIST] [-c] [-o OUTFILE] [-cL]
+
+options:
+  -h, --help            show this help message and exit
+
+Required:
+  -t TOKEN, --token TOKEN
+                        Slack Oauth token
+
+Attacks:
+  -sP, --spoof          Spoof a Slack message, customizing your name, icon, etc
+                        (Requires -e,-eL, or -cH)
+  -m, --message         Send a message as the bot associated with your token
+                        (Requires -e,-eL, or -cH)
+  -s, --search          Search slack for secrets with a keyword
+  -a, --attach          Send a message containing a malicious attachment (Requires -f
+                        and -e,-eL, or -cH)
+
+Arguments:
+  -f FILE, --file FILE  Path to file attachment
+  -e EMAIL, --email EMAIL
+                        Email of target
+  -cH CHANNEL, --channel CHANNEL
+                        Target Slack Channel (Do not include #)
+  -eL EMAIL_LIST, --email_list EMAIL_LIST
+                        Path to list of emails separated by newline
+  -c, --check           Lookup and display the permissions and available attacks
+                        associated with your provided token.
+  -o OUTFILE, --outfile OUTFILE
+                        Outfile to store search results
+  -cL, --channel_list   List all public Slack channels
 ```
 ## Token
+To use this tool, you must provide a xoxb or xoxp token. 
 ```
 Required:
   -t TOKEN, --token TOKEN  (Slack xoxb/xoxp token)
