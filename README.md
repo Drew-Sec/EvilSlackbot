@@ -6,7 +6,7 @@ A Slack Attack Framework for conducting Red Team and phishing exercises within S
 This tool is intended for Security Professionals only. Do not use this tool against any Slack workspace without explicit permission to test. Use at your own risk.
 
 ## Background
-Millions of organizations utilize Slack to help their employees communicate, collaborate, and interact. Many of these Slack workspaces install apps or bots that can be used to automate different tasks within Slack. These bots are individually provided permissions that dictate what tasks the bot is permitted to request via the Slack API. To authenticate to the Slack API, each bot is assigned an api token that begins with **xoxb** or **xoxp**. More often than not, these tokens are leaked somewhere. When these tokens are exfiltrated during a Red Team exercise, it can be a pain to properly utilize them. Now **EvilSlackbot** is here to automate and streamline that process. **You can use **EvilSlackbot** to send spoofed Slack messages, phishing links, files, and search for secrets leaked in slack.**
+Thousands of organizations utilize Slack to help their employees communicate, collaborate, and interact. Many of these Slack workspaces install apps or bots that can be used to automate different tasks within Slack. These bots are individually provided permissions that dictate what tasks the bot is permitted to request via the Slack API. To authenticate to the Slack API, each bot is assigned an api token that begins with **xoxb** or **xoxp**. More often than not, these tokens are leaked somewhere. When these tokens are exfiltrated during a Red Team exercise, it can be a pain to properly utilize them. Now **EvilSlackbot** is here to automate and streamline that process. **You can use **EvilSlackbot** to send spoofed Slack messages, phishing links, files, and search for secrets leaked in slack.**
 
 ## Phishing Simulations
 In addition to red teaming, **EvilSlackbot** has also been developed with Slack phishing simulations in mind. To use **EvilSlackbot** to conduct a Slack phishing exercise, simply create a bot within Slack, give your bot  the permissions required for your intended test, and provide **EvilSlackbot** with a list of emails of employees you would like to test with simulated phishes (Links, files, spoofed messages) 
@@ -102,7 +102,7 @@ python3 EvilSlackbot.py -t <xoxp token> -s -o <outfile.txt>
 ```
 
 ### __Attachments (-a)__
-With the correct token permissions, **EvilSlackbot** allows you to send file attachments. The attachment attack requires a **path to the file (-f)** you with to send. This attack also requires either the **email address (-e)** of the target, a **list of target emails (-eL)**, or the name of a **Slack channel (-cH)**. **EvilSlackbot** will use these arguments to lookup the SlackID of the user associated with the provided emails or channel name. To automate your attack, use a list of emails.
+With the correct token permissions, **EvilSlackbot** allows you to send file attachments. The attachment attack requires a **path to the file (-f)** you wish to send. This attack also requires either the **email address (-e)** of the target, a **list of target emails (-eL)**, or the name of a **Slack channel (-cH)**. **EvilSlackbot** will use these arguments to lookup the SlackID of the user associated with the provided emails or channel name. To automate your attack, use a list of emails.
 ```
 python3 EvilSlackbot.py -t <xoxb token> -a -f <path to file> -e <email address>
 
