@@ -51,6 +51,9 @@ def token_attacks(perms):
 def checkperms():
     check = t.api_call('auth.test')
     perms = check.headers['x-oauth-scopes'].split(',')
+    name = check['user']
+    div()
+    print(green + 'This token belongs to a bot named: ' + blue+name.title())
     div()
     print(green + 'The permissions for your token are:',red + str(perms))
     div()
