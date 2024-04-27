@@ -2,7 +2,7 @@
 
 from slack import WebClient
 from slack.errors import SlackApiError
-import argparse
+import argparse,time
 from colorama import Fore, init
 
 # Added text color
@@ -110,15 +110,22 @@ def listChannels():
     lookup = t.conversations_list(types="public_channel,private_channel",limit="999")
     cursor_list = lookup['response_metadata']['next_cursor']
     channel_list = lookup['channels']
-    while True:
-        if lookup['response_metadata']['next_cursor']:
-            lookup = t.conversations_list(types="public_channel,private_channel",limit="999", cursor=cursor_list)
-            cursor_list = lookup['response_metadata']['next_cursor']
-            channel_list += lookup['channels']    
-        else:
-            break
     div()
     print(blue+'Searching for channels:')
+    while True:
+        if lookup['response_metadata']['next_cursor']:
+            try:
+                lookup = t.conversations_list(types="public_channel,private_channel",limit="999", cursor=cursor_list)
+                cursor_list = lookup['response_metadata']['next_cursor']
+                channel_list += lookup['channels']
+            except SlackApiError as e:
+                print(red+'ERROR: '+white+e.response['error'])
+                print(blue+'Slack API ratelimits to 19,980 channels found per minute')
+                print(red+'Sleeping for: '+white+'60 seconds to refresh ratelimit')
+                time.sleep(61)
+                print(blue+'Resuming search for channels:')
+        else:
+            break           
     if args.outfile != None:
             print(green+'Results printed to: '+white+args.outfile)
     for chan in range(0,len(channel_list)):
