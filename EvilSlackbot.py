@@ -107,12 +107,12 @@ def lookupByChannel():
     return user_id
 
 def listChannels():
-    lookup = t.conversations_list(types="public_channel,private_channel",limit="200")
+    lookup = t.conversations_list(types="public_channel,private_channel",limit="999")
     cursor_list = lookup['response_metadata']['next_cursor']
     channel_list = lookup['channels']
     while True:
         if lookup['response_metadata']['next_cursor']:
-            lookup = t.conversations_list(types="public_channel,private_channel",limit="200", cursor=cursor_list)
+            lookup = t.conversations_list(types="public_channel,private_channel",limit="999", cursor=cursor_list)
             cursor_list = lookup['response_metadata']['next_cursor']
             channel_list += lookup['channels']    
         else:
